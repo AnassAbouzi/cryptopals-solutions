@@ -1,0 +1,11 @@
+#!/bin/bash
+
+UTILITIES_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+
+gcc -std=c11 -Wall -Wextra -Wpedantic -fsanitize=address -Werror -O2 \
+-I"$UTILITIES_DIR" \
+*.c "$UTILITIES_DIR/"*.c \
+-o $1 -lm
+
+
+
