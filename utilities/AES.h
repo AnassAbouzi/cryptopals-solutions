@@ -40,3 +40,5 @@ int aes_decrypt_ECB(uint8_t *ct, int len, uint8_t *key, uint8_t *pt);
 int pkcs7_pad(uint8_t *pt, int len, uint8_t *padded_pt);
 int pkcs7_unpad(uint8_t *padded_pt, int len, uint8_t *pt);
 
+int aes_encrypt_CBC(uint8_t *pt, int len, uint8_t *key, uint8_t *iv, uint8_t *ct);
+int aes_decrypt_CBC(uint8_t *ct, int len, uint8_t *key, uint8_t *iv, uint8_t *pt);

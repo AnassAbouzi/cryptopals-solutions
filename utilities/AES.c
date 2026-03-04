@@ -357,6 +357,43 @@ int aes_decrypt_ECB(uint8_t *ct, int len, uint8_t *key, uint8_t *pt) {
 	return 0;
 }
 
+int aes_encrypt_CBC(uint8_t *pt, int len, uint8_t *key, uint8_t *iv, uint8_t *ct) {
+	if (!pt || !key || !iv || !ct || (len % 16 != 0)) return -1;
+
+	int i;
+	uint8_t *tmp_ct = (uint8_t*) malloc(sizeof(uint8_t) * len);
+	memcpy(tmp_ct, pt, len);
+
+	xor_bytes(tmp_ct, iv, tmp_ct, BLK_LEN);
+	for (i = 0; i + BLK_LEN < len; i += BLK_LEN) {
+		aes_encrypt_blk(tmp_ct + i, key, ct + i);
+		xor_bytes(ct + i, tmp_ct + i + BLK_LEN, tmp_ct + i + BLK_LEN, BLK_LEN);
+	}
+	aes_encrypt_blk(tmp_ct + i, key, ct + i);
+
+	free(tmp_ct);
+	return 0;
+}
+
+int aes_decrypt_CBC(uint8_t *ct, int len, uint8_t *key, uint8_t *iv, uint8_t *pt) {
+	if (!pt || !key || !iv || !ct || (len % 16 != 0)) return -1;
+
+	int i;
+	uint8_t *tmp_pt = (uint8_t*) malloc(sizeof(uint8_t) * len);
+	memcpy(tmp_pt, ct, len);
+
+	aes_decrypt_blk(ct, key, tmp_pt);
+	xor_bytes(tmp_pt, iv, pt, BLK_LEN);
+
+	for (i = BLK_LEN; i < len; i += BLK_LEN) {
+		aes_decrypt_blk(ct + i, key, tmp_pt + i);
+		xor_bytes(tmp_pt + i, ct + i - BLK_LEN, pt + i, BLK_LEN);
+	}
+
+	free(tmp_pt);
+	return 0;
+}
+
 int pkcs7_pad(uint8_t *pt, int len, uint8_t *padded_pt) {
         if (!pt || !padded_pt) return -1;
 
@@ -385,3 +422,4 @@ int pkcs7_unpad(uint8_t *padded_pt, int len, uint8_t *pt) {
 
         return len - pad;
 }
+

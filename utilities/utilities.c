@@ -1,10 +1,12 @@
 #include <stddef.h>
+#include <unistd.h>
 #include <stdint.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <math.h>
+#include <sys/random.h>
 
 const char HEX[] = "0123456789abcdef";
 
@@ -311,3 +313,41 @@ int xor_bytes(uint8_t *b1, uint8_t *b2, uint8_t *out, int len) {
 
 	return 0;
 }
+
+int random_bytes(uint8_t *out, int len) {
+    int off = 0;
+    while (off < len) {
+        int n = getrandom(out + off, len - off, 0);
+        if (n > 0) {
+                off += n;
+                continue;
+        }
+        return -1;
+    }
+    return 0;
+}
+
+int readn(int fd, uint8_t *buf, int n) {
+	int total = 0;
+	while(n > 0) {
+		int r = read(fd, buf, n);
+		if (r <= 0) return -1;
+		buf += r;
+		n -= r;
+		total += r;
+	}
+	return total;
+}
+
+int writen(int fd, uint8_t *buf, int n) {
+	int total = 0;
+	while (n > 0) {
+		int r = write(fd, buf, n);
+		if (r <= 0) return -1;
+		buf += r;
+		n -= r;
+		total += r;
+	}
+	return total;
+}
+

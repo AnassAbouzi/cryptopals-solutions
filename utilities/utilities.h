@@ -48,3 +48,9 @@ int l_shift_cyclic(uint8_t *arr, int len, int n);
 int r_shift_cyclic(uint8_t *arr, int len, int n);
 
 int xor_bytes(uint8_t *b1, uint8_t *b2, uint8_t *out, int len);
+
+int random_bytes(uint8_t *out, int len);
+
+int writen(int fd, uint8_t *buf, int n);
+int readn(int fd, uint8_t *buf, int n);
+
